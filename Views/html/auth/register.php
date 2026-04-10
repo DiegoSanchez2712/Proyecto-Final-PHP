@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro - Four Seasons</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo">Four Seasons</div>
+        <div class="nav-links">
+            <a href="<?= SITE_URL ?>index.php">Inicio</a>
+        </div>
+    </nav>
+
+    <!-- FORMULARIO -->
+    <section class="form-section">
+        <div class="form-container">
+            <h2>Crear Cuenta</h2>
+
+            <form action="<?= SITE_URL ?>index.php?action=registerUser" method="POST">
+
+                <label>Tipo de documento</label>
+                <select name="document_type_id" required>
+                    <option value="">Seleccione una opcíon</option>
+                    <option value="1">Cédula de Ciudadanía</option>
+                    <option value="2">Tarjeta de Identidad</option>
+                    <option value="3">Cédula de Extranjería</option>
+                </select>
+
+                <label>Número de documento</label>
+                <input type="text" name="document_number" placeholder="Ingrese su número de documento" required>
+
+                <label>Nombre</label>
+                <input type="text" name="name" placeholder="Ingrese su nombre" required>
+
+                <label>Apellido</label>
+                <input type="text" name="last_name" placeholder="Ingrese su apellido" required>
+
+                <label>Teléfono</label>
+                <input type="tel" name="phone" placeholder="Ingrese su teléfono" required>
+
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Ingrese su email" required>
+
+                <label>Contraseña</label>
+                <input type="password" name="password" placeholder="Ingrese su contraseña" required>
+
+                <button type="submit">Registrarse</button>
+
+            </form>
+        </div>
+    </section>
+
+</body>
+</html>
+
