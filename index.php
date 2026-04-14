@@ -13,8 +13,20 @@
         if($_GET['action'] === 'registerUser') {
             $controllerBase->registerUser($_POST);
         }
+        if($_GET['action'] === 'getFormLoginUser') {
+            $controllerBase->verPaginaInicio('Views/html/auth/login.php');
+        }
+        if($_GET['action'] === 'loginUser') {
+            $controllerBase->loginUser($_POST);
+        }
+        if($_GET['action'] === 'getDashboard') {
+            $controllerBase->verPaginaInicio('Views/html/dashboard.php');
+        }
     } else {
         $controllerBase->verPaginaInicio('Views/html/home.php');
     }
 
+    unset($_SESSION['errors']);
+    unset($_SESSION['old']);
+    unset($_SESSION['success']);
 ?>

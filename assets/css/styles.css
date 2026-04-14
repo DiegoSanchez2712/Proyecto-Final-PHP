@@ -172,6 +172,12 @@ body {
     transform: translateY(-2px);
 }
 
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
 /* ANIMACIÓN */
 @keyframes fadeIn {
     from {

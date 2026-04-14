@@ -14,7 +14,7 @@
         <div class="nav-links">
             <a href="#habitaciones">Habitaciones</a>
             <a href="#contacto">Contacto</a>
-            <a href="auth/login.php">Iniciar Sesión</a>
+            <a href="<?= SITE_URL ?>index.php?action=getFormLoginUser">Iniciar Sesión</a>
             <a href="<?= SITE_URL ?>index.php?action=getFormRegisterUser">Registrarse</a>
         </div>
     </nav>
