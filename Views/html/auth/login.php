@@ -39,9 +39,19 @@
 
                 <label>Correo electrónico</label>
                 <input type="email" name="email" value="<?php echo $_SESSION['old']['email'] ?? ''; ?>" required>
+                <?php if (!empty($_SESSION['errors']['email'] ?? [])){
+                    foreach($_SESSION['errors']['email'] as $error) {
+                        echo '<div class="error-message"> -' . $error . '</div>';
+                    }
+                } ?>
 
                 <label>Contraseña</label>
                 <input type="password" name="password" value="<?php echo $_SESSION['old']['password'] ?? ''; ?>" required>
+                <?php if (!empty($_SESSION['errors']['password'] ?? [])){
+                    foreach($_SESSION['errors']['password'] as $error) {
+                        echo '<div class="error-message"> -' . $error . '</div>';
+                    }
+                } ?>
 
                 <button type="submit">Ingresar</button>
 

@@ -6,15 +6,7 @@ class ControllerBase {
     }
 
     public function validateRegisterData($data) {
-        $errors = [
-            "document_type_id" => [],
-            "document_number" => [],
-            "name" => [],
-            "last_name" => [],
-            "phone" => [],
-            "email" => [],
-            "password" => []
-        ];
+        $errors = [];
 
         // Validacion de docuement_type_id
         if (!empty($data['document_type_id'])) {
@@ -66,8 +58,8 @@ class ControllerBase {
         // Validacion de password
         if (empty($data['password'])) {
             $errors['password'][] = 'La contraseña es obligatoria';
-        } elseif (strlen($data['password']) < 6) {
-            $errors['password'][] = 'La contraseña debe tener al menos 6 caracteres';
+        } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/', $data['password'])) {
+            $errors['password'][] = 'La contraseña debe tener al menos 6 caracteres, una mayuscula, una minuscula, un numero y un caracter especial';
         }
         return $errors;
     }
@@ -85,7 +77,7 @@ class ControllerBase {
             $errors['password'][] = 'La contraseña debe tener al menos 6 caracteres';
         }
 
-        $existe = $user->validateRegisterUser($data);
+        $existe = $user->validateLoginUser($data);
         if ($existe == 0) {
             $errors['general'][] = 'El usuario no existe';
         }
@@ -109,7 +101,7 @@ class ControllerBase {
 
         $user = new User();
         $existe = $user->validateRegisterUser($datos);
-        if ($existe>0) {
+        if ($existe > 0) {
             $_SESSION['errors'] = ['general' => 'El usuario ya existe'];
             $_SESSION['old'] = $datos;
             
@@ -157,6 +149,19 @@ class ControllerBase {
             exit;
         }
 
+        $resultado = $user->loginUser($datos);
+        if ($resultado === 0) {
+            $_SESSION['errors'] = ['general' => 'Error al iniciar sesión'];
+            $_SESSION['old'] = $datos;
+            
+            header('Location: ' . SITE_URL . 'index.php?action=getFormLoginUser');
+            exit;
+        } else {
+            $_SESSION['user']['id'] = $resultado['id'];
+            $_SESSION['user']['name'] = $resultado['name'];
+            header('Location: ' . SITE_URL . 'index.php?action=getDashboard');
+            exit;
+        }
         
     }
 }
