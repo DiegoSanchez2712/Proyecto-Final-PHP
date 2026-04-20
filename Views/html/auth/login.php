@@ -21,11 +21,13 @@
         <div class="form-container">
             <?php
                 if (isset($_SESSION['errors']['general'])) {
-                    echo '<div class="error-message">' . $_SESSION['errors']['general'] . '</div>';
+                    foreach($_SESSION['errors']['general'] as $error) {
+                        echo '<div class="error-box">' . $error . '</div>';
+                    }
                     unset($_SESSION['errors']['general']);
                 }
                 elseif (isset($_SESSION['success'])) {
-                    echo '<div class="success-message">' . $_SESSION['success'] . '</div>';
+                    echo '<div class="success-box">' . $_SESSION['success'] . '</div>';
                     unset($_SESSION['success']);
                 }
             ?>
@@ -53,7 +55,7 @@
                     }
                 } ?>
 
-                <button type="submit">Ingresar</button>
+                <button type="submit" id="loginButton">Ingresar</button>
 
             </form>
 
