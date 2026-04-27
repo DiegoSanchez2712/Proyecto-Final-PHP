@@ -1,6 +1,6 @@
 <?php 
 class User {
-    public function validateRegisterUser($data) {
+    public function getUserByEmail($data) {
         $conexion = new Conexion(); 
         $conexion->conectar();
         $sql = "SELECT * FROM users WHERE email = '$data[email]' AND document_number = '$data[document_number]'";
@@ -11,7 +11,7 @@ class User {
         } 
         return 0; // Usuario no existe
     }
-    public function validateLoginUser($data) {
+    public function userExists($data) {
         $conexion = new Conexion(); 
         $conexion->conectar();
         $sql = "SELECT * FROM users WHERE email = '$data[email]'";

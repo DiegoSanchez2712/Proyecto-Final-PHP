@@ -1,29 +1,32 @@
 <?php
     session_start();
     require_once 'Controllers/controllerBase.php';
+    require_once 'Controllers/controllerAuth.php';
     require_once 'config/config.php';
     require_once 'Models/conexion.php';
     require_once 'Models/user.php';
     $controllerBase = new ControllerBase();
+    $controllerAuth = new ControllerAuth();
 
     if (isset($_GET['action'])) {
         if($_GET['action'] === 'getFormRegisterUser') {
-            $controllerBase->verpaginaInicio('Views/html/auth/register.php');
+            $controllerBase->render('Views/html/auth/register.php');
         }
         if($_GET['action'] === 'registerUser') {
-            $controllerBase->registerUser($_POST);
+            $controllerAuth->registerUser($_POST);
         }
         if($_GET['action'] === 'getFormLoginUser') {
-            $controllerBase->verPaginaInicio('Views/html/auth/login.php');
+            $controllerBase->render('Views/html/auth/login.php');
         }
         if($_GET['action'] === 'loginUser') {
-            $controllerBase->loginUser($_POST);
+            $controllerAuth->loginUser($_POST);
         }
         if($_GET['action'] === 'getDashboard') {
-            $controllerBase->verPaginaInicio('Views/html/dashboard.php');
+            $controllerBase->requireAuth();
+            $controllerBase->render('Views/html/dashboard.php');
         }
     } else {
-        $controllerBase->verPaginaInicio('Views/html/home.php');
+        $controllerBase->render('Views/html/home.php');
     }
 
     unset($_SESSION['errors']);

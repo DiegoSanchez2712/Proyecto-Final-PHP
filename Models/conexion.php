@@ -10,8 +10,12 @@ class Conexion {
         $db_name = "hotel_fourseasons";
         $username = "root";
         $password = "";
+
         $this->MySQLi = new mysqli($host, $username, $password, $db_name);
-        echo "conectado";
+
+        if ($this->MySQLi->connect_error) {
+            die("Error de conexión: " . $this->MySQLi->connect_error);
+        }
     }
 
     public function desconectar() {
@@ -22,6 +26,10 @@ class Conexion {
         $this->sql = $sql;
         $this->result = $this->MySQLi->query($this->sql);
         $this->filasAfectadas = $this->MySQLi->affected_rows;
+    }
+
+    public function getMySQLi() {
+        return $this->MySQLi;
     }
 
     public function getResult() {
