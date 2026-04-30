@@ -304,12 +304,16 @@ body {
 .btn-edit:hover {
     background: #222;
 }
+.btn-edit svg {
+    width: 16px; 
+    transform: translateX(1px); /* opcional, centra mejor */
+}
 
 .btn-edit:hover svg {
     transform: rotate(360deg);
 }
 
-/* ELIMINAR (rojo con efecto distinto 👀) */
+/* ELIMINAR */
 .btn-delete {
     background: #ef4444;
     border: none;
@@ -344,43 +348,6 @@ body {
 .btn-pdf:hover svg {
     transform: translateY(-3px) scale(1.1);
 }
-
-/* COLORES */
-
-.btn-red {
-    background: #ef4444;
-    border: none;
-    cursor: pointer;
-}
-
-.btn-red:hover {
-    background: #dc2626;
-}
-
-.btn-gray {
-    background: #374151;
-}
-
-.btn-gray:hover {
-    background: #111827;
-}
-
-.btn-green {
-    background: #22c55e;
-}
-
-.btn-green:hover {
-    background: #16a34a;
-}
-
-.btn-dark {
-    background: black;
-}
-
-.btn-dark:hover {
-    background: #333;
-}
-
 
 
 /* ANIMACIÓN */
