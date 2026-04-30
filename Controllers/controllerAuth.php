@@ -12,7 +12,7 @@ class ControllerAuth extends ControllerBase {
             }
         }
         else {
-            $errors['document_type_id'] = 'El tipo de documento es obligatorio';
+            $errors['document_type_id'][] = 'El tipo de documento es obligatorio';
         }
 
         // Validacion de document_number
@@ -73,12 +73,15 @@ class ControllerAuth extends ControllerBase {
         } elseif (strlen($data['password']) < 6) {
             $errors['password'][] = 'La contraseña debe tener al menos 6 caracteres';
         }
-
-        $existe = $user->userExists($data);
-        if ($existe == 0) {
-            $errors['general'][] = 'El usuario no existe';
-        }
+        
         return $errors;
+    }
+
+    private function loginFailed($datos) {
+        $_SESSION['errors'] = ['general' => 'Credenciales incorrectas'];
+        $_SESSION['old'] = $datos;
+        
+        $this->redirect(SITE_URL . 'index.php?action=getFormLoginUser');
     }
 
     public function registerUser($datos) {
@@ -87,18 +90,23 @@ class ControllerAuth extends ControllerBase {
         unset($_SESSION['success']);
         
         $errores = $this->validateRegisterData($datos);
-        var_dump($errores);
-        if (count($errores) > 0) {
-            $_SESSION['errors'] = $errores;
-            $_SESSION['old'] = $datos;
-            
-            $this->redirect(SITE_URL . 'index.php?action=getFormRegisterUser');
-        } 
 
         $user = new User();
-        $existe = $user->getUserByEmail($datos);
-        if ($existe > 0) {
-            $_SESSION['errors'] = ['general' => 'El usuario ya existe'];
+
+        if (empty($errores)) {
+
+            if ($user->emailExists($datos['email'])) {
+                $errores['email'][] = 'El email ya existe';
+            }
+
+            if ($user->documentNumberExists($datos['document_number'])) {
+                $errores['document_number'][] = 'El número de documento ya existe';
+            }
+        }
+        
+
+        if (!empty($errores)) {
+            $_SESSION['errors'] = $errores;
             $_SESSION['old'] = $datos;
             
             $this->redirect(SITE_URL . 'index.php?action=getFormRegisterUser');
@@ -108,7 +116,7 @@ class ControllerAuth extends ControllerBase {
         $datos['password'] = $password;
 
         $resultado = $user->createUser($datos);
-        if ($resultado > 0) {
+        if ($resultado === true) {
             $_SESSION['success'] = 'Usuario registrado exitosamente';
             $this->redirect(SITE_URL . 'index.php?action=getFormRegisterUser');
             exit;
@@ -119,41 +127,37 @@ class ControllerAuth extends ControllerBase {
             $this->redirect(SITE_URL . 'index.php?action=getFormRegisterUser');
         }
     } 
+
     public function loginUser($datos) {
         unset($_SESSION['errors']);
         unset($_SESSION['old']);
         unset($_SESSION['success']);
         
         $errores = $this->validateLoginData($datos);
-        if (count($errores) > 0) {
+        if (!empty($errores)) {
             $_SESSION['errors'] = $errores;
             $_SESSION['old'] = $datos;
             
             $this->redirect(SITE_URL . 'index.php?action=getFormLoginUser');
-
         } 
 
         $user = new User();
-        $existe = $user->userExists($datos);
-        if ($existe == 0) {
-            $_SESSION['errors'] = ['general' => 'El usuario no existe'];
-            $_SESSION['old'] = $datos;
-            
-            $this->redirect(SITE_URL . 'index.php?action=getFormLoginUser');
-            exit;
+        $existe = $user->getUserByEmail($datos['email']);
+
+        if ($existe === null) {
+            this->loginFailed($datos);
         }
 
-        $resultado = $user->loginUser($datos);
-        if ($resultado === 0) {
-            $_SESSION['errors'] = ['general' => 'Error al iniciar sesión'];
-            $_SESSION['old'] = $datos;
-            
-            $this->redirect(SITE_URL . 'index.php?action=getFormLoginUser');
-        } else {
-            $_SESSION['user']['id'] = $resultado['id'];
-            $_SESSION['user']['name'] = $resultado['name'];
-            $this->redirect(SITE_URL . 'index.php?action=getDashboard');
+        if (!password_verify($datos['password'], $existe['password'])) {
+            $this->loginFailed($datos);
         }
-        
+
+        $_SESSION['user'] = [
+            'id' => $existe['id'],
+            'name' => $existe['name'],
+            'email' => $existe['email']
+        ];
+
+        $this->redirect(SITE_URL . 'index.php?action=getDashboard');
     }
 }
