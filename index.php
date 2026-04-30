@@ -23,7 +23,11 @@
         }
         if($_GET['action'] === 'getDashboard') {
             $controllerBase->requireAuth();
-            $controllerBase->render('Views/html/dashboard.php');
+            $controllerBase->render('Views/html/dashboard/dashboard.php');
+        }
+        if($_GET['action'] === 'logoutUser') {
+            session_destroy();
+            $controllerBase->redirect(SITE_URL . 'index.php');
         }
     } else {
         $controllerBase->render('Views/html/home.php');
