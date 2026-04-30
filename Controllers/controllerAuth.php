@@ -73,12 +73,12 @@ class ControllerAuth extends ControllerBase {
         } elseif (strlen($data['password']) < 6) {
             $errors['password'][] = 'La contraseña debe tener al menos 6 caracteres';
         }
-        
+
         return $errors;
     }
 
     private function loginFailed($datos) {
-        $_SESSION['errors'] = ['general' => 'Credenciales incorrectas'];
+        $_SESSION['errors']['general'][] = 'Credenciales incorrectas';
         $_SESSION['old'] = $datos;
         
         $this->redirect(SITE_URL . 'index.php?action=getFormLoginUser');
@@ -145,7 +145,7 @@ class ControllerAuth extends ControllerBase {
         $existe = $user->getUserByEmail($datos['email']);
 
         if ($existe === null) {
-            this->loginFailed($datos);
+            $this->loginFailed($datos);
         }
 
         if (!password_verify($datos['password'], $existe['password'])) {
