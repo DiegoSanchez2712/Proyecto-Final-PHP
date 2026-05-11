@@ -152,7 +152,7 @@ body {
 }
 
 /* BOTÓN */
-.form-container button {
+#submit-btn {
     width: 100%;
     margin-top: 25px;
     padding: 14px;
@@ -167,9 +167,15 @@ body {
 }
 
 /* HOVER */
-.form-container button:hover {
+#submit-btn:hover {
     background: #222;
     transform: translateY(-2px);
+}
+
+#submit-btn:disabled {
+    background: #999;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .error-box {
@@ -181,6 +187,7 @@ body {
     border-radius: 6px;
     font-size: 14px;
     font-family: Arial, sans-serif;
+    animation: fadeIn 0.3s ease;
 }
 
 .success-box {
@@ -192,13 +199,16 @@ body {
     border-radius: 6px;
     font-size: 14px;
     font-family: Arial, sans-serif;
+    animation: fadeIn 0.3s ease;
 }
 
 .error-message {
     color: red;
     font-size: 12px;
     margin-top: 4px;
+    animation: fadeIn 0.3s ease;
 }
+
 
 /* DASHBOARD */
 .user-dashboard {
@@ -237,21 +247,24 @@ body {
 .tabla {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: #757575;
     color: black;
     border-radius: 10px;
     overflow: hidden;
 }
 
 .tabla th {
-    background: #eee;
+    background: #212121;
     padding: 12px;
+}
+.tabla thead th {
+    color: white;
 }
 
 .tabla td {
     padding: 10px;
     text-align: center;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #212121;
 }
 
 /* ACCIONES */
@@ -263,16 +276,14 @@ body {
 
 /* BOTONES */
 .btn {
-    padding: 6px 12px;
+    padding: 8px 16px;
     border-radius: 6px;
     text-decoration: none;
-    color: white;
     font-size: 13px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-start;
-    position: relative;
-    overflow: hidden;
+    display: inline-block;
+    transition: 0.2s;
+    border: none;
+    cursor: pointer;
 }
 
 /* BASE */
@@ -296,6 +307,31 @@ body {
     transition: transform 0.4s ease;
 }
 
+/* DESCARGAR SHEET */
+.btn-sheet svg {
+    width: 40px;
+    height: 40px;
+    padding-right: 15%;
+}
+.btn-sheet:hover svg {
+    animation: bounceDown 0.4s ease;
+}
+
+/* AÑADIR RESERVA */
+.btn-add svg {
+    width: 40px;
+    height: 40px;
+    padding-left: 15%;
+}
+
+.btn-add:hover svg {
+    transform: scale(1.2);
+}
+
+.btn-add svg {
+    transition: transform 0.2s ease;
+}
+
 /* EDITAR (negro) */
 .btn-edit {
     background: black;
@@ -305,8 +341,7 @@ body {
     background: #222;
 }
 .btn-edit svg {
-    width: 16px; 
-    transform: translateX(1px); /* opcional, centra mejor */
+    width: 20px; 
 }
 
 .btn-edit:hover svg {
@@ -349,6 +384,116 @@ body {
     transform: translateY(-3px) scale(1.1);
 }
 
+/*REBOTE HACIA ABAJO */
+@keyframes bounceDown {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+    100% { transform: translateY(0); }
+}
+
+/* FORMULARIO CREAR RESERVA */
+.form-reserva {
+    min-height: 100vh;
+    background-image: url('../img/hotel-create-booking-background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 60px 20px;
+    color: white;
+}
+
+/* CONTENEDOR */
+.form-box {
+    max-width: 500px;
+    margin: auto;
+    background: #1c1c1c;
+    padding: 30px;
+    border-radius: 12px;
+}
+
+/* GRUPOS */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+}
+
+/* BOTONES */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.form-group label {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #d1d5db;
+}
+
+.form-group input[readonly] {
+    background: #2a2a2a;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.total-box {
+    background: #111;
+    border: 1px solid #2a2a2a;
+
+    padding: 20px;
+    border-radius: 10px;
+
+    margin-top: 10px;
+    margin-bottom: 25px;
+
+    text-align: center;
+}
+
+.total-box span {
+    display: block;
+    color: #9ca3af;
+    font-size: 14px;
+
+    margin-bottom: 5px;
+}
+
+.total-box h3 {
+    font-size: 32px;
+    color: #22c55e;
+}
+
+.btn-gray {
+    background: #374151;
+    color: white;
+}
+
+.btn-gray:hover {
+    background: #1f2937;
+}
+
+/* VERDE (acción principal) */
+.btn-green {
+    background: #22c55e;
+    color: white;
+}
+
+.btn-green:hover {
+    background: #16a34a;
+}
+
+.btn-green:disabled {
+    background: #86efac;
+    cursor: not-allowed;
+}
 
 /* ANIMACIÓN */
 @keyframes fadeIn {

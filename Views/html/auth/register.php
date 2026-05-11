@@ -109,12 +109,12 @@
                     } ?>
                 </div>
 
-                <button type="submit" id="submitButton" disabled>Registrarse</button>
+                <button type="submit" id="submit-btn" disabled>Registrarse</button>
 
             </form>
         </div>
     </section>
-    <script src="assets/js/registerActions.js"></script>
+    <script type="module" src="assets/js/registerActions.js"></script>
 </body>
 </html>
 

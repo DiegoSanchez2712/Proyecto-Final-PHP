@@ -55,7 +55,7 @@
                     }
                 } ?>
 
-                <button type="submit" id="loginButton">Ingresar</button>
+                <button type="submit" id="submit-btn">Ingresar</button>
 
             </form>
 

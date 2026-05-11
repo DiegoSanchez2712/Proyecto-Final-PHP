@@ -1,3 +1,5 @@
+import ErrorHandler from "./utils/errorHandler.js";
+
 const document_type_id = document.getElementById('document_type_id');
 const document_number = document.getElementById('document_number');
 const name = document.getElementById('name');
@@ -5,7 +7,7 @@ const last_name = document.getElementById('last_name');
 const phone = document.getElementById('phone');
 const email = document.getElementById('email');
 const password = document.getElementById('password');
-const submitButton = document.getElementById('submitButton');
+const submitButton = document.getElementById('submit-btn');
 const fieldstouched = {
     document_type_id: false,
     document_number: false,
@@ -52,33 +54,14 @@ const fieldsToValidate = [
         event: "input",
         validate: validatePassword
     }
-]
-
-// ------------------------------------------------------------------------------
-//Manejo de errores
-function showErrorMessage(input, errors) {
-    let errorElement = input.parentElement;
-    errorElement.querySelectorAll('.error-message').forEach(e => e.remove());
-
-    errors.forEach(error => {
-        const errorMessage = document.createElement('div');
-        errorMessage.classList.add('error-message');
-        errorMessage.textContent = error;
-        errorElement.appendChild(errorMessage);
-    });
-}
-
-function removeErrorMessage(input) {
-    let errorElement = input.parentElement;
-    errorElement.querySelectorAll('.error-message').forEach(e => e.remove());
-}
+]   
 
 // ------------------------------------------------------------------------------
 //Validación de campos
 
 function validateDocument_type_id() { 
     if (!fieldstouched[document_type_id.id]) return []
-
+    
     let errors = []
 
     if (document_type_id.value === '') {
@@ -242,7 +225,7 @@ function validateForm() {
 
 
 // ------------------------------------------------------------------------------
-
+//Loop para agregar listeners a los campos
 
 fieldsToValidate.forEach(field => {
     field.element.addEventListener(field.event, () => {
@@ -251,12 +234,11 @@ fieldsToValidate.forEach(field => {
         const errors = field.validate()
 
         if (errors.length > 0) {
-            showErrorMessage(field.element, errors)
+            ErrorHandler.showErrorMessage(field.element, errors)
         } else {
-            removeErrorMessage(field.element)
+            ErrorHandler.removeErrorMessage(field.element)
         }
 
         validateForm()
     })
 })
-

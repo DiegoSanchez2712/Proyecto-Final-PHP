@@ -119,7 +119,6 @@ class ControllerAuth extends ControllerBase {
         if ($resultado === true) {
             $_SESSION['success'] = 'Usuario registrado exitosamente';
             $this->redirect(SITE_URL . 'index.php?action=getFormRegisterUser');
-            exit;
         } else {
             $_SESSION['errors'] = ['general' => 'Error al registrar el usuario'];
             $_SESSION['old'] = $datos;
