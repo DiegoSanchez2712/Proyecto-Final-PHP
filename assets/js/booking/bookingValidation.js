@@ -57,7 +57,7 @@ export function validateEndDate(end_dateValue) {
 }
 
 export function validateGuestCount(guest_countValue) {
-    if(!fieldsTouched.guest_count) return [];
+
     let errors = [];
     const value = guest_countValue.trim();
 
@@ -78,7 +78,6 @@ export function validateGuestCount(guest_countValue) {
 }
 
 export function validatePaymentMethodId(payment_method_idValue) {
-
 
     let errors = [];
 

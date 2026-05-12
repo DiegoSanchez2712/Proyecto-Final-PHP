@@ -1,7 +1,7 @@
 export async function fetchAvailableRooms(categoryId) {
     const response = await fetch(`index.php?action=getAvailableRooms&categoryId=${categoryId}`);
     
-    if (!response.status === 401) {
+    if (response.status === 401) {
         alert("Sesión expirada");
         window.location.href = "index.php";
         return;

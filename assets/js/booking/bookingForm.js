@@ -15,6 +15,15 @@ let currentPrice = 0;
 let currentMaxGuests = 0;
 
 //------------------------------------------------------------------------------
+// Estado de errores de los campos
+const fieldsValidity = {
+    category_id: false,
+    room_id: false,
+    start_date: false,
+    end_date: false,
+    guest_count: false,
+    payment_method_id: false
+}
 //Estado de campos tocados
 const fieldsTouched = {
     category_id: false,
@@ -30,7 +39,8 @@ const fieldsToValidate = [
     {
         element: category_id,
         event: "change",
-        handler: handleValidateCategoryId
+        handler: handleValidateCategoryId,
+        afterValidate: updateRooms
     },
     {
         element: room_id,
@@ -66,65 +76,73 @@ const fieldsToValidate = [
 
 //------------------------------------------------------------------------------
 //Validación de campos
-async function handleValidateCategoryId() {
-    if(!fieldsTouched.category_id) return [];
+function handleValidateCategoryId() {
+    if(!fieldsTouched.category_id) return true;
 
     const errors = Validation.validateCategoryId(category_id.value);
     
-    if (errors.length > 0) {
-        ErrorHandler.showErrorMessage(category_id, errors);
-    }
-    else {
-        ErrorHandler.removeErrorMessage(category_id);
-    }
+    const validation = ErrorHandler.errorHandler(category_id, errors);
 
-    const rooms = await Service.fetchAvailableRooms(category_id.value);
-
-    renderAvailableRooms(rooms);
+    return validation
 }
 
 function handleValidateRoomId() {
-    if(!fieldsTouched.room_id) return [];
+    if(!fieldsTouched.room_id) return true;
 
     const errors = Validation.validateRoomId(room_id.value);
     
-    if (errors.length > 0) {
-        ErrorHandler.showErrorMessage(room_id, errors);
-    }
-    else {
-        ErrorHandler.removeErrorMessage(room_id);
-    }
+    const validation = ErrorHandler.errorHandler(room_id, errors);
+
+    return validation
 }
 
 function handleValidateStartDate() {
-    if(!fieldsTouched.start_date) return [];
+    if(!fieldsTouched.start_date) return true;
 
     const errors = Validation.validateStartDate(start_date.value);
+    
+    const validation = ErrorHandler.errorHandler(start_date, errors);
+
+    return validation
 }
 
 function handleValidateEndDate() {
-    if(!fieldsTouched.end_date) return [];
+    if(!fieldsTouched.end_date) return true;
 
     const errors = Validation.validateEndDate(end_date.value);
     
+    const validation = ErrorHandler.errorHandler(end_date, errors);
+
+    return validation
 }
 
 function handleValidateDateRange() {
-    if(!fieldsTouched.start_date || !fieldsTouched.end_date) return [];
+    if(!fieldsTouched.start_date || !fieldsTouched.end_date) return true;
 
     const errors = Validation.validateDateRange(start_date.value, end_date.value);
+
+    ErrorHandler.errorHandler(start_date, errors);
+    return ErrorHandler.errorHandler(end_date, errors);
 }
 
 function handleValidateGuestCount() {
-    if(!fieldsTouched.guest_count) return [];
+    if(!fieldsTouched.guest_count) return true;
     
     const errors = Validation.validateGuestCount(guest_count.value);
+
+    const validation = ErrorHandler.errorHandler(guest_count, errors);
+    
+    return validation
 }
 
 function handleValidatePaymentMethodId() {
-    if(!fieldsTouched.payment_method_id) return [];
+    if(!fieldsTouched.payment_method_id) return true;
 
     const errors = Validation.validatePaymentMethodId(payment_method_id.value);
+
+    const validation = ErrorHandler.errorHandler(payment_method_id, errors);
+
+    return validation
 }
 //------------------------------------------------------------------------------
 //Renderizado de habitaciones disponibles
@@ -147,6 +165,13 @@ function renderAvailableRooms(rooms) {
     }
 }
 
+async function updateRooms() {
+
+    const rooms = await Service.fetchAvailableRooms(category_id.value)
+
+    renderAvailableRooms(rooms)
+}
+
 //------------------------------------------------------------------------------
 //Loop de validación
 fieldsToValidate.forEach(field => {
@@ -157,23 +182,20 @@ fieldsToValidate.forEach(field => {
 
     elements.forEach(el => {
 
-        el.addEventListener(field.event, () => {
+        el.addEventListener(field.event, async () => {
 
             // touched
             elements.forEach(e => {
                 fieldsTouched[e.id] = true;
             });
 
-            const errors = field.handler();
+            const isValid = field.handler(); 
 
-            if (errors.length > 0) {
-                ErrorHandler.showErrorMessage(el, errors);
-            }
+            fieldsValidity[field.element.id] = isValid;
 
-            else {
-                ErrorHandler.removeErrorMessage(el);
+            if (isValid && field.afterValidate) {
+                await field.afterValidate()
             }
-            
 
             save_button.disabled = ErrorHandler.isFormValid(fieldsToValidate);
 

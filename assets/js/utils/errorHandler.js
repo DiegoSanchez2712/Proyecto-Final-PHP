@@ -23,15 +23,30 @@ export default class ErrorHandler {
         return input.parentElement;
     }
 
-    static isFormValid(fieldsToValidate) {
-    let allValid = true
-    fieldsToValidate.forEach(field => {
-        const errors = field.handler()
+    static errorHandler(input, errors) {
         if (errors.length > 0) {
-            allValid = false
+            this.showErrorMessage(input, errors);
+            return false
         }
-    })
+        else {
+            this.removeErrorMessage(input);
+            return true
+        }
+    }
 
-    return !allValid
-}
+    static isFormValid(fieldsToValidate) {
+
+        for (const field of fieldsToValidate) {
+
+            const isValid = field.handler();
+
+            if (!isValid) {
+                return false;
+            }
+
+        }
+
+        return true;
+
+    }
 }
