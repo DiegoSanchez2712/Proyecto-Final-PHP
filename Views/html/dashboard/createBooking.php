@@ -18,11 +18,6 @@
     </div>
 </nav>
 
-<pre>
-<?php
-print_r($_SESSION['errors'] ?? []);
-?>
-</pre>
 
 <section class="form-reserva">
 
@@ -89,10 +84,15 @@ print_r($_SESSION['errors'] ?? []);
             ?>
         </div>
 
+        <div class="date-range">
+            <div id="date_range"></div>
+        </div>
+
         <!-- PERSONAS -->
         <div class="form-group">
             <label>Cantidad de personas</label>
-            <input type="number" name="guest_count" id="guest_count" min="1" required>
+            <input type="number" name="guest_count" id="guest_count" min="1" required disabled>
+            <small id="guest_limit"> Seleccione una habitacion antes </small>
             <?php
                 if (!empty($_SESSION['errors']['guest_count'] ?? [])){
                     foreach($_SESSION['errors']['guest_count'] as $error) {
@@ -105,7 +105,7 @@ print_r($_SESSION['errors'] ?? []);
         <!-- MÉTODO DE PAGO -->
         <div class="form-group">
             <label>Método de pago</label>
-            <select name="payment_method_id" id="payment_method_id" required>
+            <select name="payment_method_id" id="payment_method_id" placeholder="Seleccione una habitacion primero" required>
                 <option value="">Seleccionar</option>
                 <?php foreach ($paymentMethods as $method){ ?>
                     <option value="<?= $method['id'] ?>"><?= $method['name'] ?></option>
@@ -122,7 +122,7 @@ print_r($_SESSION['errors'] ?? []);
 
         <div class="total-box">
             <span>Total a pagar</span>
-            <h3 id="total_price">$1.250.000</h3>
+            <h3 id="total_price">$0</h3>
         </div>
 
         <!-- BOTONES -->

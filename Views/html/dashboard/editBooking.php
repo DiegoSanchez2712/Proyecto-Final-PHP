@@ -1,15 +1,3 @@
-<?php
-
-/* Simulación de datos */
-$reserva = [
-    'categoria' => 'Premium',
-    'numero_habitacion' => '203',
-    'fecha_inicio' => '2026-05-10',
-    'fecha_fin' => '2026-05-15',
-    'huespedes' => 2
-];
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -34,89 +22,117 @@ $reserva = [
 
 <section class="form-reserva">
 
-    <h1 class="title-main">
-        Editar Reserva
-    </h1>
+    <h2 class="title-main">Crear Reserva</h2>
 
-    <form action="actualizar_reserva.php" method="POST" class="form-box">
+    <form action="<?= SITE_URL ?>index.php?action=createBooking" method="POST" class="form-box">
 
-        <!-- CATEGORÍA -->
-        <div class="form-group">
-            <label>Categoría</label>
-
-            <input 
-                type="text"
-                name="categoria"
-                value="<?= $reserva['categoria'] ?>"
-                readonly
-            >
-        </div>
+        <input type="hidden" name="booking_id" value="<?php echo $booking["ID_de_reserva"]; ?>">
 
         <!-- HABITACIÓN -->
         <div class="form-group">
-            <label>Número de habitación</label>
-
-            <input 
-                type="text"
-                name="numero_habitacion"
-                value="<?= $reserva['numero_habitacion'] ?>"
-                readonly
-            >
+            <label>Categoria Seleccionada</label>
+            <input name="category_id" id="category_id" value="<?php echo $booking["Categoria_de_habitacion"]; ?>" required disabled>
+            </input>
+            <?php
+                if (!empty($_SESSION['errors']['category_id'] ?? [])){
+                    foreach($_SESSION['errors']['category_id'] as $error) {
+                        echo '<div class="error-message"> -' . $error . '</div>';
+                    }
+                }
+            ?>
         </div>
+
+        <div class="form-group">
+            <label>habitaciones Seleccionada</label>
+            <input name="room_id" id="room_id" value="<?php echo $booking["Numero_de_habitacion"]; ?>" disabled required>
+            </input>
+            <?php
+                if (!empty($_SESSION['errors']['room_id'] ?? [])){
+                    foreach($_SESSION['errors']['room_id'] as $error) {
+                        echo '<div class="error-message"> -' . $error . '</div>';
+                    }
+                }
+            ?>
+        </div>
+
 
         <!-- FECHA INICIO -->
         <div class="form-group">
             <label>Fecha de inicio</label>
-
-            <input 
-                type="date"
-                name="fecha_inicio"
-                value="<?= $reserva['fecha_inicio'] ?>"
-                required
-            >
+            <input type="date" name="start_date" id="start_date" value="<?php echo $booking["Fecha_de_empiezo"]; ?>" required>
+            <?php
+                if (!empty($_SESSION['errors']['start_date'] ?? [])){
+                    foreach($_SESSION['errors']['start_date'] as $error) {
+                        echo '<div class="error-message"> -' . $error . '</div>';
+                    }
+                }
+            ?>
         </div>
 
-        <!-- FECHA FINAL -->
+        <!-- FECHA FIN -->
         <div class="form-group">
-            <label>Fecha final</label>
-
-            <input 
-                type="date"
-                name="fecha_fin"
-                value="<?= $reserva['fecha_fin'] ?>"
-                required
-            >
+            <label>Fecha de fin</label>
+            <input type="date" name="end_date" id="end_date" value="<?php echo $booking["Fecha_de_final"]; ?>" required>
+            <?php
+                if (!empty($_SESSION['errors']['end_date'] ?? [])){
+                    foreach($_SESSION['errors']['end_date'] as $error) {
+                        echo '<div class="error-message"> -' . $error . '</div>';
+                    }
+                }
+            ?>
         </div>
 
-        <!-- HUÉSPEDES -->
-        <div class="form-group">
-            <label>Número de huéspedes</label>
+        <div class="date-range">
+            <div id="date_range"></div>
+        </div>
 
-            <input 
-                type="number"
-                name="huespedes"
-                min="1"
-                value="<?= $reserva['huespedes'] ?>"
-                required
-            >
+        <!-- PERSONAS -->
+        <div class="form-group">
+            <label>Cantidad de personas</label>
+            <input type="number" name="guest_count" id="guest_count" min="1" value="<?php echo $booking["Total_de_visitantes"]; ?>" required>
+            <small>Maximo de visitantes: <?php echo $booking["Total_de_visitantes"]; ?></small>
+            <?php
+                if (!empty($_SESSION['errors']['guest_count'] ?? [])){
+                    foreach($_SESSION['errors']['guest_count'] as $error) {
+                        echo '<div class="error-message"> -' . $error . '</div>';
+                    }
+                }
+            ?>
+        </div>
+
+        <!-- MÉTODO DE PAGO -->
+        <div class="form-group">
+            <label>Método de pago</label>
+            <select name="payment_method_id" id="payment_method_id" placeholder="Seleccione una habitacion primero" required>
+                <option value="">Seleccionar</option>
+                <?php foreach ($paymentMethods as $method){ ?>
+                    <option value="<?= $method['id'] ?>"><?= $method['name'] ?></option>
+                <?php } ?>
+            </select>
+            <?php
+                if (!empty($_SESSION['errors']['payment_method_id'] ?? [])){
+                    foreach($_SESSION['errors']['payment_method_id'] as $error) {
+                        echo '<div class="error-message"> -' . $error . '</div>';
+                    }
+                }
+            ?>
+        </div>
+
+        <div class="total-box">
+            <span>Total a pagar</span>
+            <h3 id="total_price">$0</h3>
         </div>
 
         <!-- BOTONES -->
         <div class="form-actions">
-
-            <a href="dashboard.php" class="btn btn-gray">
-                Cancelar
-            </a>
-
-            <button type="submit" class="btn btn-green">
-                Guardar Cambios
-            </button>
-
+            <a href="dashboard.php" class="btn btn-gray">Cancelar</a>
+            <button type="submit" class="btn btn-green" id="save_button" disabled>Guardar Reserva</button>
         </div>
 
     </form>
 
 </section>
 
+<script type="module" src="assets/js/booking/bookingForm.js"></script>
 </body>
 </html>

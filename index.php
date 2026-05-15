@@ -9,6 +9,8 @@
     require_once 'Models/user.php';
     require_once 'Models/booking.php';
     require_once 'Models/room.php';
+    require_once 'lib/fpdf186/fpdf.php';
+
     $controllerBase = new ControllerBase();
     $controllerAuth = new ControllerAuth();
     $controllerDashboard = new ControllerDashboard();
@@ -53,11 +55,12 @@
         }
         if($_GET['action'] === 'getGuestCountAndPrice') {
             $controllerBase->requireAuthApi();
-            $controllerDashboard->getGuestCountAndPrice($_GET['roomId'] ?? null);
+            $controllerRoom = new ControllerRoom();
+            $controllerRoom->getGuestCountAndPrice($_GET['roomId'] ?? null);
         }
-        if($_GET['action'] === 'getFormEditBooking') {
+        if($_GET['action'] === 'getFormUpdateBoking') {
             $controllerBase->requireAuth();
-            $controllerDashboard->getFormEditBooking($_GET['id'] ?? null);
+            $controllerDashboard->getFormUpdateBooking($_GET['id'] ?? null);
         }
     } else {
         $controllerBase->render('html/home');

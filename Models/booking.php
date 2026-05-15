@@ -72,17 +72,20 @@ class Booking {
         $codigoConexion = $conexion->getMySQLi();
         $stmt = $codigoConexion->prepare("
             SELECT 
-                b.id,
+                b.id AS ID_de_reserva,
+                c.name AS Categoria_de_habitacion,
                 r.num_room AS Numero_de_habitacion, 
                 b.start_date AS Fecha_de_empiezo, 
                 b.end_date AS Fecha_de_final, 
                 b.guest_count AS Total_de_visitantes, 
+                r.max_people AS Maximo_de_visitantes,
                 sb.name AS Estado_de_reserva, 
                 b.total_price AS Total_a_pagar
             FROM users u 
             JOIN bookings b ON b.user_id = u.id
             JOIN rooms r ON b.room_id = r.id
             JOIN status_bookings sb ON b.status_id = sb.id
+            JOIN categories c ON r.category_id = c.id
             WHERE u.id = ? AND b.id = ?
         ");
 

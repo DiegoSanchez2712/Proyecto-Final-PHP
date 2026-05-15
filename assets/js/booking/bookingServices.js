@@ -27,5 +27,6 @@ export async function fetchGuestCountAndPrice(roomId) {
         console.error(error.message);
         return;
     }
+    
     return await response.json();
 }

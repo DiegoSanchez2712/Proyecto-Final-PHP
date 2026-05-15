@@ -16,15 +16,16 @@ class ControllerDashboard extends ControllerBase {
         $this->render('html/dashboard/createBooking', ['categories' => $categories, 'paymentMethods' => $paymentMethods]);
     }
 
-    public function getFormEditBooking($bookingId) {
+    public function getFormUpdateBooking($bookingId) {
         $booking = new Booking();
         $reserva = $booking->getUserBookingWithDetailsById($_SESSION['user']['id'], $bookingId);
+        $paymentMethods = $booking->getAllPaymentMethods();
         if (!$reserva) {
             $_SESSION['errors'] = ['general' => 'Reserva no encontrada'];
             $this->redirect(SITE_URL . 'index.php?action=getDashboard');
             exit;
         }
-        $this->render('html/dashboard/editBooking', ['booking' => $reserva]);
+        $this->render('html/dashboard/editBooking', ['booking' => $reserva, 'paymentMethods' => $paymentMethods]);
     }
 
     public function validateCreateBookingData($datos) {

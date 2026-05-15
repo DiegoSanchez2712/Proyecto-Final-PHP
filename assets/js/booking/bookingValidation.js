@@ -29,10 +29,26 @@ export function validateStartDate(start_dateValue) {
         return errors;
     }
 
-    const today = new Date(start_dateValue);
+    const [year, month, day] = start_dateValue.split('-');
 
-    if (isNaN(today.getTime())) {
+    const selectedDay = new Date(year, month - 1, day);
+    selectedDay.setHours(0,0,0,0);
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (isNaN(selectedDay.getTime())) {
         errors.push('La fecha de inicio no es válida');
+        return errors;
+    }
+
+    if (selectedDay < today) {
+        errors.push('La reserva no puede realizarse en dias pasados')
+    }
+
+
+    if (selectedDay.getTime() === today.getTime()) {
+        errors.push('La reserva no puede realizarse hoy')
     }
 
     return errors;
@@ -47,10 +63,26 @@ export function validateEndDate(end_dateValue) {
         return errors;
     }
 
-    const today = new Date(end_dateValue);
+    const [year, month, day] = end_dateValue.split('-');
 
-    if (isNaN(today.getTime())) {
+    const selectedDay = new Date(year, month - 1, day);
+    selectedDay.setHours(0,0,0,0);
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (isNaN(selectedDay.getTime())) {
         errors.push('La fecha de fin no es válida');
+        return errors;
+    }
+    
+    if (selectedDay < today) {
+        errors.push('La reserva no puede realizarse en dias pasados')
+    }
+
+
+    if (selectedDay.getTime() === today.getTime()) {
+        errors.push('La reserva no puede terminar hoy')
     }
 
     return errors;
@@ -92,10 +124,14 @@ export function validateDateRange(start, end) {
 
     let errors = [];
 
-    if (!start || !end) return [];
+    const [startYear, startMonth, startDay] = start.split('-');
+    const [endYear, endMonth, endDay] = end.split('-');
 
-    const startDate = new Date(start);
-    const endDate = new Date(end);
+    const startDate = new Date(startYear, startMonth - 1, startDay);
+    const endDate = new Date(endYear, endMonth - 1, endDay);
+
+    startDate.setHours(0,0,0,0);
+    endDate.setHours(0,0,0,0);
 
     if (startDate >= endDate) {
         errors.push('La fecha de inicio debe ser anterior a la fecha de fin');

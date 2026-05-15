@@ -78,12 +78,12 @@ $reservas = [
                             <td><?php echo $booking['Fecha_de_final']; ?></td>
                             <td><?php echo $booking['Total_de_visitantes']; ?></td>
                             <td><?php echo $booking['Estado_de_reserva']; ?></td>
-                            <td><?php echo $booking['Total_a_pagar']; ?></td>
+                            <td>$<?php echo $booking['Total_a_pagar']; ?></td>
 
                             <!-- ACCIONES DENTRO DEL TR -->
                             <td class="acciones">
 
-                                <a href="<?= SITE_URL ?>index.php?action=UpdateBooking&id=<?= $booking['id'] ?>" class="btn-icon btn-edit" title="Editar">
+                                <a href="<?= SITE_URL ?>index.php?action=getFormUpdateBoking&id=<?= $booking['id'] ?>" class="btn-icon btn-edit" title="Editar">
                                     <svg viewBox="-10 80 420 440">
                                         <path d="M290.74 93.24l128 128L142.06 497.94H14.06V369.94L290.74 93.24z"/>
                                     </svg>
