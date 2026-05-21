@@ -5,6 +5,8 @@ import * as Service from "./bookingServices.js";
 //----------------------------------------------------
 // ELEMENTOS
 //----------------------------------------------------
+const form = document.getElementById('form');
+
 const category_id = document.getElementById('category_id');
 const room_id = document.getElementById('room_id');
 const start_date = document.getElementById('start_date');
@@ -17,7 +19,7 @@ const total_price = document.getElementById('total_price');
 const save_button = document.getElementById('save_button');
 
 //----------------------------------------------------
-// ESTADO MÍNIMO REAL
+// ESTADO
 //----------------------------------------------------
 let currentPrice = 0;
 let currentMaxGuests = 0;
@@ -38,30 +40,43 @@ const fieldsTouched = {
 // VALIDACIONES
 //----------------------------------------------------
 function handleValidateCategoryId() {
+
     if (!fieldsTouched.category_id) return false;
+
     const errors = Validation.validateCategoryId(category_id.value);
+
     return ErrorHandler.errorHandler(category_id, errors);
 }
 
 function handleValidateRoomId() {
+
     if (!fieldsTouched.room_id) return false;
+
     const errors = Validation.validateRoomId(room_id.value);
+
     return ErrorHandler.errorHandler(room_id, errors);
 }
 
 function handleValidateStartDate() {
+
     if (!fieldsTouched.start_date) return false;
+
     const errors = Validation.validateStartDate(start_date.value);
+
     return ErrorHandler.errorHandler(start_date, errors);
 }
 
 function handleValidateEndDate() {
+
     if (!fieldsTouched.end_date) return false;
+
     const errors = Validation.validateEndDate(end_date.value);
+
     return ErrorHandler.errorHandler(end_date, errors);
 }
 
 function handleValidateDateRange() {
+
     if (!fieldsTouched.start_date || !fieldsTouched.end_date) return false;
 
     const errors = Validation.validateDateRange(
@@ -73,16 +88,20 @@ function handleValidateDateRange() {
 }
 
 function handleValidateGuestCount() {
+
     if (!fieldsTouched.guest_count) return false;
 
     const errors = Validation.validateGuestCount(guest_count.value);
+
     return ErrorHandler.errorHandler(guest_count, errors);
 }
 
 function handleValidatePaymentMethodId() {
+
     if (!fieldsTouched.payment_method_id) return false;
 
     const errors = Validation.validatePaymentMethodId(payment_method_id.value);
+
     return ErrorHandler.errorHandler(payment_method_id, errors);
 }
 
@@ -94,36 +113,62 @@ function renderAvailableRooms(rooms) {
     room_id.innerHTML = '';
 
     if (!category_id.value) {
-        room_id.innerHTML = '<option value="">Seleccione un tipo de habitacion</option>';
+
+        room_id.innerHTML = '<option value="">Seleccione un tipo de habitación</option>';
         room_id.disabled = true;
+
         return;
     }
 
     if (!rooms.length) {
+
         room_id.innerHTML = '<option value="">No hay habitaciones disponibles</option>';
         room_id.disabled = true;
+
         return;
     }
 
     room_id.innerHTML = '<option value="">Seleccione una habitación</option>';
 
     rooms.forEach(room => {
+
         const option = document.createElement('option');
+
         option.value = room.id;
         option.textContent = room.number;
+
         room_id.appendChild(option);
     });
 
     room_id.disabled = false;
 }
 
-function updateRoomPricing(room) {
+function resetRoomState() {
 
+    currentPrice = 0;
+    currentMaxGuests = 0;
+
+    room_id.value = "";
+    guest_count.value = "";
+
+    guest_count.disabled = true;
+
+    guest_limit.textContent = "Seleccione una habitación";
+
+    renderTotalPrice();
+}
+
+function updateRoomPricing(room) {
+    console.log("ROOM:", room);
     if (!room) {
+
         currentPrice = 0;
         currentMaxGuests = 0;
+
         guest_count.disabled = true;
+
         renderTotalPrice();
+
         return;
     }
 
@@ -131,6 +176,7 @@ function updateRoomPricing(room) {
     currentMaxGuests = room.guestCount;
 
     guest_limit.textContent = `El límite de huéspedes es ${currentMaxGuests}`;
+
     guest_count.max = currentMaxGuests;
     guest_count.disabled = false;
 
@@ -138,7 +184,7 @@ function updateRoomPricing(room) {
 }
 
 //----------------------------------------------------
-// TOTAL PRICE 
+// TOTAL PRICE
 //----------------------------------------------------
 function calculateDays() {
 
@@ -160,7 +206,9 @@ function renderTotalPrice() {
     const days = calculateDays();
 
     if (!days || !currentPrice) {
+
         total_price.textContent = "$0";
+
         return;
     }
 
@@ -178,100 +226,132 @@ async function updateRooms() {
 
     renderAvailableRooms(rooms);
 
-    if (!category_id.value || rooms.length === 0) {
+    resetRoomState();
+}
 
-        currentPrice = 0;
-        currentMaxGuests = 0;
+async function updateGuestCountAndPrice() {
 
-        room_id.value = "";
-        guest_count.value = "";
-        guest_count.disabled = true;
+    if (!room_id.value) {
 
-        guest_limit.textContent = "Seleccione una habitación";
-        total_price.textContent = "$0";
-
-        renderTotalPrice();
+        updateRoomPricing(null);
 
         return;
     }
 
-    room_id.value = "";
-    currentPrice = 0;
-    currentMaxGuests = 0;
+    console.log(room_id.value)
 
-    guest_count.value = "";
-    guest_count.disabled = true;
-
-    guest_limit.textContent = "Seleccione una habitación";
-    total_price.textContent = "$0";
-}
-
-async function updateGuestCountAndPrice() {
     const room = await Service.fetchGuestCountAndPrice(room_id.value);
+
+    console.log(room);
+
     updateRoomPricing(room);
 }
 
 //----------------------------------------------------
-// EVENT LOOP (ORQUESTADOR)
+// VALIDATE FORM
 //----------------------------------------------------
-const fieldsToValidate = [
-    {
-        element: category_id,
-        event: "change",
-        handler: handleValidateCategoryId,
-        afterValidate: updateRooms
-    },
-    {
-        element: room_id,
-        event: "change",
-        handler: handleValidateRoomId,
-        afterValidate: updateGuestCountAndPrice
-    },
-    {
-        element: start_date,
-        event: "change",
-        handler: handleValidateStartDate,
-        afterValidate: handleValidateDateRange
-    },
-    {
-        element: end_date,
-        event: "change",
-        handler: handleValidateEndDate,
-        afterValidate: handleValidateDateRange
-    },
-    {
-        element: guest_count,
-        event: "change",
-        handler: handleValidateGuestCount
-    },
-    {
-        element: payment_method_id,
-        event: "change",
-        handler: handleValidatePaymentMethodId
-    }
-];
+function validateForm() {
 
-fieldsToValidate.forEach(field => {
+    const validations = [
+        handleValidateCategoryId(),
+        handleValidateRoomId(),
+        handleValidateStartDate(),
+        handleValidateEndDate(),
+        handleValidateDateRange(),
+        handleValidateGuestCount(),
+        handleValidatePaymentMethodId()
+    ];
 
-    const elements = [field.element];
+    save_button.disabled = validations.includes(false);
+}
 
-    elements.forEach(el => {
+//----------------------------------------------------
+// LISTENERS
+//----------------------------------------------------
+category_id.addEventListener('change', async () => {
 
-        el.addEventListener(field.event, async () => {
+    fieldsTouched.category_id = true;
 
-            fieldsTouched[el.id] = true;
+    handleValidateCategoryId();
 
-            const isValid = field.handler();
+    await updateRooms();
 
-            field.valid = isValid;
-
-            if (field.afterValidate) {
-                await field.afterValidate();
-            }
-
-            renderTotalPrice();
-
-            save_button.disabled = !fieldsToValidate.every(f => f.valid);
-        });
-    });
+    validateForm();
 });
+
+room_id.addEventListener('change', async () => {
+
+    fieldsTouched.room_id = true;
+
+    handleValidateRoomId();
+
+    await updateGuestCountAndPrice();
+
+    renderTotalPrice();
+
+    validateForm();
+});
+
+start_date.addEventListener('change', () => {
+
+    fieldsTouched.start_date = true;
+
+    handleValidateStartDate();
+    handleValidateDateRange();
+
+    renderTotalPrice();
+
+    validateForm();
+});
+
+end_date.addEventListener('change', () => {
+
+    fieldsTouched.end_date = true;
+
+    handleValidateEndDate();
+    handleValidateDateRange();
+
+    renderTotalPrice();
+
+    validateForm();
+});
+
+guest_count.addEventListener('change', () => {
+
+    fieldsTouched.guest_count = true;
+
+    handleValidateGuestCount();
+
+    validateForm();
+});
+
+payment_method_id.addEventListener('change', () => {
+
+    fieldsTouched.payment_method_id = true;
+
+    handleValidatePaymentMethodId();
+
+    validateForm();
+});
+
+//----------------------------------------------------
+// UPDATE MODE
+//----------------------------------------------------
+async function initializeUpdate() {
+
+    if (form.dataset.mode !== 'update') return;
+
+    Object.keys(fieldsTouched).forEach(key => {
+        fieldsTouched[key] = true;
+    });
+
+    await updateGuestCountAndPrice();
+
+    handleValidateDateRange();
+
+    renderTotalPrice();
+
+    validateForm();
+}
+
+initializeUpdate();

@@ -1,5 +1,6 @@
 <?php
 require_once 'Controllers/controllerBase.php';
+require_once 'lib/fpdf186/fpdf.php';
 class ControllerDashboard extends ControllerBase {
 
     public function index() {
@@ -13,7 +14,7 @@ class ControllerDashboard extends ControllerBase {
         $booking = new Booking();
         $categories = $room->getAllCategories();
         $paymentMethods = $booking->getAllPaymentMethods();
-        $this->render('html/dashboard/createBooking', ['categories' => $categories, 'paymentMethods' => $paymentMethods]);
+        $this->render('html/dashboard/booking/createBooking', ['categories' => $categories, 'paymentMethods' => $paymentMethods]);
     }
 
     public function getFormUpdateBooking($bookingId) {
@@ -25,55 +26,97 @@ class ControllerDashboard extends ControllerBase {
             $this->redirect(SITE_URL . 'index.php?action=getDashboard');
             exit;
         }
-        $this->render('html/dashboard/editBooking', ['booking' => $reserva, 'paymentMethods' => $paymentMethods]);
+        $this->render('html/dashboard/booking/editBooking', ['booking' => $reserva, 'paymentMethods' => $paymentMethods]);
     }
 
-    public function validateCreateBookingData($datos) {
-        $errores = [];
+    public function cancelBooking($bookingId) {
 
-        if (empty($datos['category_id'])) {
-            $errores['category_id'][] = 'El campo categoría es obligatorio.';
+        if (!$bookingId) {
+            die("ID inválido");
         }
 
-        if (empty($datos['room_id'])) {
-            $errores['room_id'][] = 'El campo habitación es obligatorio.';
+        $booking = new Booking();
+
+        $statusId = $booking->getStatusByName("Cancelada");
+
+        if (!$statusId) {
+            die("Estado 'Cancelada' no existe");
         }
 
-        $startDate = $datos['start_date'] ?? null;
+        $booking->updateBookingStatus($bookingId, $statusId);
 
-        if (!empty($startDate)) {
-            $date = DateTime::createFromFormat('Y-m-d', $startDate);
-            if (!$date || $date->format('Y-m-d') !== $startDate) {
-                $errores['start_date'][] = 'La fecha de inicio no es válida.';
-            }
-        } else {
-            $errores['start_date'][] = 'El campo fecha de inicio es obligatorio.';
+        $this->index();
+    }
+
+    public function downloadPDF($userId, $bookingId) {
+        $booking = new Booking();
+        $reportData = $booking->getBookingDetailsForPdf($userId, $bookingId);
+
+        if ($reportData){
+            $this->render("html/dashboard/reports/downloadBooking", ['booking' => $reportData]);
         }
-
-        $endDate = $datos['end_date'] ?? null;
-
-        if (!empty($endDate)) {
-            $date = DateTime::createFromFormat('Y-m-d', $endDate);
-            if (!$date || $date->format('Y-m-d') !== $endDate) {
-                $errores['end_date'][] = 'La fecha de fin no es válida.';
-            }
-        } else {
-            $errores['end_date'][] = 'El campo fecha de fin es obligatorio.';
+        else {
+            $this->index();
         }
+    }
 
-        if (!empty($errores['start_date']) || !empty($errores['end_date'])) {
-            $start = new DateTime($startDate);
-            $end = new DateTime($endDate);
+    public function validateBookingData($datos) {
+    $errores = [];
+
+    if (empty($datos['category_id'])) {
+        $errores['category_id'][] = 'El campo categoría es obligatorio.';
+    }
+
+    if (empty($datos['room_id'])) {
+        $errores['room_id'][] = 'El campo habitación es obligatorio.';
+    }
+
+    $startDate = $datos['start_date'] ?? null;
+
+    if (!empty($startDate)) {
+        $start = DateTime::createFromFormat('Y-m-d', $startDate);
+
+        if (!$start || $start->format('Y-m-d') !== $startDate) {
+            $errores['start_date'][] = 'La fecha de inicio no es válida.';
+        }
+    } else {
+        $errores['start_date'][] = 'El campo fecha de inicio es obligatorio.';
+    }
+
+    $endDate = $datos['end_date'] ?? null;
+
+    if (!empty($endDate)) {
+        $end = DateTime::createFromFormat('Y-m-d', $endDate);
+
+        if (!$end || $end->format('Y-m-d') !== $endDate) {
+            $errores['end_date'][] = 'La fecha de fin no es válida.';
+        }
+    } else {
+        $errores['end_date'][] = 'El campo fecha de fin es obligatorio.';
+    }
+
+    if (empty($errores['start_date']) && empty($errores['end_date'])) {
+
+        $start = DateTime::createFromFormat('Y-m-d', $startDate);
+        $end = DateTime::createFromFormat('Y-m-d', $endDate);
+
+        if ($start && $end) {
+            $start->setTime(0, 0, 0);
+            $end->setTime(0, 0, 0);
+
             if ($start >= $end) {
-                $errores['end_date'][] = 'La fecha final deber ser mayor a la inicial';
+                $errores['date_range'][] = 'La fecha final debe ser mayor a la inicial';
             }
         }
     }
+
+    return $errores;
+}
 
     private function validateBookingDatabaseRules($datos, $booking, $room) {
         $errores = [];
     
-        if ($booking->bookingExists($datos['room_id'], $datos['start_date'], $datos['end_date'])) {
+        if ($booking->bookingExists($datos['room_id'], $datos['start_date'], $datos['end_date'], $datos['booking_id'])) {
             $errores['general'][] = 'La habitación no está disponible en las fechas seleccionadas.';
         } 
 
@@ -98,7 +141,7 @@ class ControllerDashboard extends ControllerBase {
         unset($_SESSION['old']);
         unset($_SESSION['success']);
 
-        $errores = $this->validateCreateBookingData($datos);
+        $errores = $this->validateBookingData($datos);
 
         $booking = new Booking();
         $room = new Room();
@@ -119,12 +162,47 @@ class ControllerDashboard extends ControllerBase {
         if ($resultado === true) {
             $_SESSION['success'] = 'Reserva creada exitosamente';
             $this->redirect(SITE_URL . 'index.php?action=getDashboard');
-            exit;
         } else {
             $_SESSION['errors'] = ['general' => 'Error al crear la reserva'];
             $_SESSION['old'] = $datos;
             
             $this->redirect(SITE_URL . 'index.php?action=getFormCreateBooking');
+        }
+
+    }
+
+    public function UpdateBooking($datos) {
+        unset($_SESSION['errors']);
+        unset($_SESSION['old']);
+        unset($_SESSION['success']);
+
+        $errores = $this->validateBookingData($datos);
+
+        $booking = new Booking();
+        $room = new Room();
+
+        if (empty($errores)) {
+            $errores = $this->validateBookingDatabaseRules($datos, $booking, $room);
+        }
+        
+        if (!empty($errores)) {
+            $_SESSION['errors'] = $errores;
+            $_SESSION['old'] = $datos;
+            $this->redirect(SITE_URL . 'index.php?action=getFormUpdateBooking&id='. $datos['booking_id']);
+        } 
+
+        $datos['total_price'] = $booking->calculateTotalPrice($datos['room_id'], $datos['start_date'], $datos['end_date']);
+
+        $resultado = $booking->updateBooking($_SESSION['user']['id'], $datos);
+        if ($resultado === true) {
+            $_SESSION['success'] = 'Reserva editada exitosamente';
+            $this->redirect(SITE_URL . 'index.php?action=getDashboard');
+
+        } else {
+            $_SESSION['errors'] = ['general' => 'Error al editar la reserva'];
+            $_SESSION['old'] = $datos;
+            
+            $this->redirect(SITE_URL . 'index.php?action=getFormUpdateBooking&id='. $datos['booking_id']);
         }
 
     }

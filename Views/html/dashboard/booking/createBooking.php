@@ -17,13 +17,15 @@
         <a href="<?= SITE_URL ?>index.php?action=logoutUser">Cerrar sesión</a>
     </div>
 </nav>
-
+<pre>
+    <?php print_r($_SESSION) ?>
+</pre>
 
 <section class="form-reserva">
 
     <h2 class="title-main">Crear Reserva</h2>
 
-    <form action="<?= SITE_URL ?>index.php?action=createBooking" method="POST" class="form-box">
+    <form action="<?= SITE_URL ?>index.php?action=createBooking" method="POST" data-mode="create" class="form-box" id="form">
 
         <!-- HABITACIÓN -->
         <div class="form-group">
@@ -86,6 +88,13 @@
 
         <div class="date-range">
             <div id="date_range"></div>
+            <?php 
+                if(!empty($_SESSION['errors']['date_range'] ?? [])) {
+                    foreach($_SESSION['errors']['date_range'] as $error) {
+                        echo'<div class="error-message"> -' . $error . '</div>';
+                    }
+                }
+            ?>
         </div>
 
         <!-- PERSONAS -->
@@ -94,7 +103,7 @@
             <input type="number" name="guest_count" id="guest_count" min="1" required disabled>
             <small id="guest_limit"> Seleccione una habitacion antes </small>
             <?php
-                if (!empty($_SESSION['errors']['guest_count'] ?? [])){
+                if (!empty($_SESSION['errors']['guest_count'] ?? [])) {
                     foreach($_SESSION['errors']['guest_count'] as $error) {
                         echo '<div class="error-message"> -' . $error . '</div>';
                     }

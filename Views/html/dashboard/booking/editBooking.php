@@ -19,19 +19,19 @@
         <a href="#">Cerrar sesión</a>
     </div>
 </nav>
-
+<pre> <?php print_r($_SESSION)?></pre>
 <section class="form-reserva">
 
-    <h2 class="title-main">Crear Reserva</h2>
+    <h2 class="title-main">Editar Reserva</h2>
 
-    <form action="<?= SITE_URL ?>index.php?action=createBooking" method="POST" class="form-box">
+    <form action="<?= SITE_URL ?>index.php?action=updateBooking" method="POST" data-mode="update" class="form-box" id="form">
 
         <input type="hidden" name="booking_id" value="<?php echo $booking["ID_de_reserva"]; ?>">
 
         <!-- HABITACIÓN -->
         <div class="form-group">
             <label>Categoria Seleccionada</label>
-            <input name="category_id" id="category_id" value="<?php echo $booking["Categoria_de_habitacion"]; ?>" required disabled>
+            <input value="<?php echo $booking["Categoria_de_habitacion"]; ?>" required readonly>
             </input>
             <?php
                 if (!empty($_SESSION['errors']['category_id'] ?? [])){
@@ -40,11 +40,13 @@
                     }
                 }
             ?>
+
+            <input type="hidden" name="category_id" id="category_id" value="<?= $booking['ID_de_categoria'] ?>">
         </div>
 
         <div class="form-group">
             <label>habitaciones Seleccionada</label>
-            <input name="room_id" id="room_id" value="<?php echo $booking["Numero_de_habitacion"]; ?>" disabled required>
+            <input value="<?php echo $booking["Numero_de_habitacion"]; ?>" required readonly>
             </input>
             <?php
                 if (!empty($_SESSION['errors']['room_id'] ?? [])){
@@ -53,7 +55,10 @@
                     }
                 }
             ?>
+
+            <input type="hidden" name="room_id" id="room_id"value="<?= $booking['ID_de_habitacion'] ?>">
         </div>
+
 
 
         <!-- FECHA INICIO -->
@@ -90,7 +95,7 @@
         <div class="form-group">
             <label>Cantidad de personas</label>
             <input type="number" name="guest_count" id="guest_count" min="1" value="<?php echo $booking["Total_de_visitantes"]; ?>" required>
-            <small>Maximo de visitantes: <?php echo $booking["Total_de_visitantes"]; ?></small>
+            <small id="guest_limit">Maximo de visitantes: <?php echo $booking["Total_de_visitantes"]; ?></small>
             <?php
                 if (!empty($_SESSION['errors']['guest_count'] ?? [])){
                     foreach($_SESSION['errors']['guest_count'] as $error) {
@@ -103,10 +108,10 @@
         <!-- MÉTODO DE PAGO -->
         <div class="form-group">
             <label>Método de pago</label>
-            <select name="payment_method_id" id="payment_method_id" placeholder="Seleccione una habitacion primero" required>
+            <select name="payment_method_id" id="payment_method_id" placeholder="Seleccione una habitacion primero" ?>" required>
                 <option value="">Seleccionar</option>
                 <?php foreach ($paymentMethods as $method){ ?>
-                    <option value="<?= $method['id'] ?>"><?= $method['name'] ?></option>
+                    <option value="<?= $method['id'] ?>" <?= $method['id'] == $booking['ID_de_metodo_de_pago'] ? 'selected' : '' ?> ><?= $method['name'] ?></option>
                 <?php } ?>
             </select>
             <?php
@@ -120,7 +125,7 @@
 
         <div class="total-box">
             <span>Total a pagar</span>
-            <h3 id="total_price">$0</h3>
+            <h3 id="total_price">$<?php echo $booking["Total_a_pagar"]; ?></h3>
         </div>
 
         <!-- BOTONES -->

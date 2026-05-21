@@ -40,6 +40,10 @@
             $controllerBase->requireAuth();
             $controllerDashboard->downloadSheet();
         }
+        if($_GET['action'] === 'downloadPDF') {
+            $controllerBase->requireAuth();
+            $controllerDashboard->downloadPDF($_SESSION['user']['id'], $_GET['id']);
+        }
         if($_GET['action'] === 'getFormCreateBooking') {
             $controllerBase->requireAuth();
             $controllerDashboard->getFormCreateBooking();
@@ -58,9 +62,17 @@
             $controllerRoom = new ControllerRoom();
             $controllerRoom->getGuestCountAndPrice($_GET['roomId'] ?? null);
         }
-        if($_GET['action'] === 'getFormUpdateBoking') {
+        if($_GET['action'] === 'getFormUpdateBooking') {
             $controllerBase->requireAuth();
             $controllerDashboard->getFormUpdateBooking($_GET['id'] ?? null);
+        }
+        if($_GET['action'] === 'updateBooking') {
+            $controllerBase->requireAuth();
+            $controllerDashboard->updateBooking($_POST);
+        }
+        if($_GET['action'] === 'cancelBooking') {
+            $controllerBase->requireAuth();
+            $controllerDashboard->cancelBooking($_GET['id'] ?? null);
         }
     } else {
         $controllerBase->render('html/home');

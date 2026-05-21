@@ -1,11 +1,3 @@
-<?php
-
-$reservas = [
-    ['id' => 1, 'habitacion' => 'Suite Deluxe', 'fecha' => '2026-05-10', 'estado' => 'Confirmada'],
-    ['id' => 2, 'habitacion' => 'Premium', 'fecha' => '2026-06-01', 'estado' => 'Pendiente']
-];
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -83,21 +75,21 @@ $reservas = [
                             <!-- ACCIONES DENTRO DEL TR -->
                             <td class="acciones">
 
-                                <a href="<?= SITE_URL ?>index.php?action=getFormUpdateBoking&id=<?= $booking['id'] ?>" class="btn-icon btn-edit" title="Editar">
+                                <a href="<?= SITE_URL ?>index.php?action=getFormUpdateBooking&id=<?= $booking['id'] ?>" class="btn-icon btn-edit" title="Editar">
                                     <svg viewBox="-10 80 420 440">
                                         <path d="M290.74 93.24l128 128L142.06 497.94H14.06V369.94L290.74 93.24z"/>
                                     </svg>
                                 </a>
 
-                                <form action="<?= SITE_URL ?>index.php?action=DeleteBooking&id=<?= $booking['id'] ?>" method="POST" style="display:inline;">
-                                    <button class="btn-icon btn-delete" title="Eliminar">
+                                <form action="<?= SITE_URL ?>index.php?action=cancelBooking&id=<?= $booking['id'] ?>" method="POST">
+                                    <button class="btn-icon btn-delete" title="Cancelar">
                                         <svg viewBox="0 0 448 512">
-                                            <path d="M135.2 17.7C140.9 7.1 151.9 0 164.3 0H283.7c12.4 0 23.4 7.1 29.1 17.7L328 32H432c8.8 0 16 7.2 16 16s-7.2 16-16 16h-16l-21.2 339.8C392.5 439.7 365.5 464 332.4 464H115.6c-33.1 0-60.1-24.3-62.4-60.2L32 64H16C7.2 64 0 56.8 0 48s7.2-16 16-16H120l15.2-14.3z"/>
+                                            <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 178.7 150.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L178.7 224l-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 269.3l73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L269.3 224l73.4-73.4z"/>
                                         </svg>
                                     </button>
                                 </form>
 
-                                <a href="<?= SITE_URL ?>index.php?action=ExportBookingPDF&id=<?= $booking['id'] ?>" class="btn-icon btn-pdf" title="Descargar PDF">
+                                <a href="<?= SITE_URL ?>index.php?action=downloadPDF&id=<?= $booking['id'] ?>" class="btn-icon btn-pdf" target="_blank" rel="noopener noreferrer" title="Descargar PDF">
                                     <svg viewBox="0 0 384 512">
                                         <path d="M224 136V0H24C10.7 0 0 10.7 0 24V488c0 13.3 10.7 24 24 24H360c13.3 0 24-10.7 24-24V160H248c-13.3 0-24-10.7-24-24z"/>
                                     </svg>
