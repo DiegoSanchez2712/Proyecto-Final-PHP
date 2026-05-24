@@ -1,6 +1,9 @@
 <?php
 require_once 'Controllers/controllerBase.php';
-require_once 'lib/fpdf186/fpdf.php';
+require_once 'Services/pdfServices.php';
+require_once 'Services/excelServices.php';
+require_once 'Services/mailServices.php';
+
 class ControllerDashboard extends ControllerBase {
 
     public function index() {
@@ -19,7 +22,7 @@ class ControllerDashboard extends ControllerBase {
 
     public function getFormUpdateBooking($bookingId) {
         $booking = new Booking();
-        $reserva = $booking->getUserBookingWithDetailsById($_SESSION['user']['id'], $bookingId);
+        $reserva = $booking->getBookingById($_SESSION['user']['id'], $bookingId);
         $paymentMethods = $booking->getAllPaymentMethods();
         if (!$reserva) {
             $_SESSION['errors'] = ['general' => 'Reserva no encontrada'];
@@ -48,12 +51,28 @@ class ControllerDashboard extends ControllerBase {
         $this->index();
     }
 
-    public function downloadPDF($userId, $bookingId) {
+    public function downloadSheet($userId) {
         $booking = new Booking();
-        $reportData = $booking->getBookingDetailsForPdf($userId, $bookingId);
+        $user = new User();
+        $userData = $user->getUserById($userId);
+        $reportData = $booking->getUserBookingsWithDetails($userId); 
 
         if ($reportData){
-            $this->render("html/dashboard/reports/downloadBooking", ['booking' => $reportData]);
+            $download = new ExcelService();
+            $download->downloadBookings($userData, $reportData);
+        }
+        else {
+            $this->index();
+        }
+    }
+
+    public function downloadPDF($userId, $bookingId) {
+        $booking = new Booking();
+        $reportData = $booking->getBookingDetails($userId, $bookingId);
+
+        if ($reportData){
+            $download = new PDFService();
+            $download->downloadBooking($reportData);
         }
         else {
             $this->index();
@@ -110,13 +129,21 @@ class ControllerDashboard extends ControllerBase {
         }
     }
 
+    if (empty($datos['guest_count'])) {
+        $errores['guest_count'][] = 'El campo de huespedes es obligatorio.';
+    }
+
+    if (empty($datos['payment_method_id'])) {
+        $errores['payment_method_id'][] = 'El campo de metodo de pago es obligatorio.';
+    }
+
     return $errores;
 }
 
     private function validateBookingDatabaseRules($datos, $booking, $room) {
         $errores = [];
     
-        if ($booking->bookingExists($datos['room_id'], $datos['start_date'], $datos['end_date'], $datos['booking_id'])) {
+        if ($booking->bookingExists($datos['room_id'], $datos['start_date'], $datos['end_date'], $datos['booking_id'] ?? NULL)) {
             $errores['general'][] = 'La habitación no está disponible en las fechas seleccionadas.';
         } 
 
@@ -157,9 +184,14 @@ class ControllerDashboard extends ControllerBase {
         } 
 
         $datos['total_price'] = $booking->calculateTotalPrice($datos['room_id'], $datos['start_date'], $datos['end_date']);
+        
 
         $resultado = $booking->createBooking($_SESSION['user']['id'], $datos);
-        if ($resultado === true) {
+        $emailData = $booking->getBookingDetails($_SESSION['user']['id'], $resultado);
+        if ($resultado) {
+            $mailservice = new MailService();
+            $mailservice->sendBookingInfo($_SESSION['user']['email'], $_SESSION['user']['name'], $emailData);
+
             $_SESSION['success'] = 'Reserva creada exitosamente';
             $this->redirect(SITE_URL . 'index.php?action=getDashboard');
         } else {

@@ -1,6 +1,13 @@
 <?php 
 require_once 'controllerBase.php';
+require_once 'Services/mailServices.php';
 class ControllerAuth extends ControllerBase { 
+
+    public function getFormRegisterUser() {
+        $user = new User();
+        $documentsTypes = $user->getAllDocumentsTypes();
+        $this->render('html/auth/register', ['documentsTypes' => $documentsTypes]);
+    }
 
     public function validateRegisterData($data) {
         $errors = [];
@@ -117,8 +124,12 @@ class ControllerAuth extends ControllerBase {
 
         $resultado = $user->createUser($datos);
         if ($resultado === true) {
+            $mailService = new MailService();
+            $mailService->sendWelcome($datos['email'], $datos['name']);
+
             $_SESSION['success'] = 'Usuario registrado exitosamente';
-            $this->redirect(SITE_URL . 'index.php?action=getFormRegisterUser');
+
+            $this->redirect(SITE_URL . 'index.php?action=getFormLoginUser');
         } else {
             $_SESSION['errors'] = ['general' => 'Error al registrar el usuario'];
             $_SESSION['old'] = $datos;

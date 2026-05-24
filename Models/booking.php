@@ -27,9 +27,9 @@ class Booking {
         );
         
         if ($stmt->execute()) {
-            return true; // Los datos se insertaron correctamente
+            return $codigoConexion->insert_id;
         } else {
-            return false; // Error al ejecutar la consulta
+            return false;
         }
     }
 
@@ -124,7 +124,7 @@ class Booking {
         return $bookings;
     }
 
-    public function getUserBookingWithDetailsById($userId, $bookingId) {
+    public function getBookingById($userId, $bookingId) {
         $conexion = new Conexion();
         $conexion->conectar();
         $codigoConexion = $conexion->getMySQLi();
@@ -162,7 +162,7 @@ class Booking {
         }
     }
 
-    public function getBookingDetailsForPdf($userId, $bookingId) {
+    public function getBookingDetails($userId, $bookingId) {
         $conexion = new Conexion();
         $conexion->conectar();
         $codigoConexion = $conexion->getMySQLi();
@@ -215,6 +215,63 @@ class Booking {
             return $room['price']; // Devuelve el precio de la habitación
         } else {
             return null; // No se encontró la habitación
+        }
+    }
+
+    public function getNumRoom($roomId) {
+        $conexion = new Conexion();
+        $conexion->conectar();
+        $codigoConexion = $conexion->getMySQLi();
+        $stmt = $codigoConexion->prepare("SELECT num_room FROM rooms WHERE id = ?");
+
+        $stmt->bind_param("i", $roomId); 
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $room = $result->fetch_assoc();
+            return $room['num_room']; // Devuelve el numero de habitacion
+        } else {
+            return null; // No se encontró la habitación
+        }
+    }
+
+    public function getpaymentMethod($paymentMethodId) {
+        $conexion = new Conexion();
+        $conexion->conectar();
+        $codigoConexion = $conexion->getMySQLi();
+        $stmt = $codigoConexion->prepare("SELECT name FROM payment_methods WHERE id = ?");
+
+        $stmt->bind_param("i", $paymentMethodId); 
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $paymentMethod = $result->fetch_assoc();
+            return $paymentMethod['name']; // Devuelve el metodo de pago
+        } else {
+            return null; // No se encontró el metodo de pago
+        }
+    }
+
+    public function getStatus($statusId) {
+        $conexion = new Conexion();
+        $conexion->conectar();
+        $codigoConexion = $conexion->getMySQLi();
+        $stmt = $codigoConexion->prepare("SELECT name FROM status_bookings WHERE id = ?");
+
+        $stmt->bind_param("i", $statusId); 
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $status = $result->fetch_assoc();
+            return $status['name']; // Devuelve el estado de la reserva
+        } else {
+            return null; // No se encontró el estado de la reserva
         }
     }
 

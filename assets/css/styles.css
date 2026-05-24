@@ -439,7 +439,12 @@ body {
     margin-top: 20px;
 }
 
-.form-group label {
+.white-form-field {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #111;
+}
+.black-form-field {
     margin-bottom: 6px;
     font-size: 14px;
     color: #d1d5db;

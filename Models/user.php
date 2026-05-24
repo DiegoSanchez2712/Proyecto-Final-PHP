@@ -38,6 +38,40 @@ class User {
         }
     }
 
+    public function getNameById($userId) {
+        $conexion = new Conexion(); 
+        $conexion->conectar();
+        $codigoConexion = $conexion->getMySQLi();
+
+        $stmt = $codigoConexion->prepare("SELECT name FROM users WHERE id = ?");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $consulta = $result->fetch_assoc();
+            return $consulta;
+        } else {
+            return null;
+        }
+    }
+
+    public function getAllDocumentsTypes() {
+        $conexion = new Conexion();
+        $conexion->conectar();
+        $codigoConexion = $conexion->getMySQLi();
+
+        $query = "SELECT id, name FROM documents_types";
+        $result = $codigoConexion->query($query);
+
+        $paymentMethods = [];
+        while ($row = $result->fetch_assoc()) {
+            $paymentMethods[] = $row;
+        }
+        return $paymentMethods;
+    }
+
     public function emailExists($email) {
         $conexion = new Conexion(); 
         $conexion->conectar();

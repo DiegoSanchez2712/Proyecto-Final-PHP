@@ -9,7 +9,7 @@
     require_once 'Models/user.php';
     require_once 'Models/booking.php';
     require_once 'Models/room.php';
-    require_once 'lib/fpdf186/fpdf.php';
+    require_once __DIR__ . '/vendor/autoload.php';
 
     $controllerBase = new ControllerBase();
     $controllerAuth = new ControllerAuth();
@@ -17,7 +17,7 @@
 
     if (isset($_GET['action'])) {
         if($_GET['action'] === 'getFormRegisterUser') {
-            $controllerBase->render('html/auth/register');
+            $controllerAuth->getFormRegisterUser();
         }
         if($_GET['action'] === 'registerUser') {
             $controllerAuth->registerUser($_POST);
@@ -38,7 +38,7 @@
         }
         if($_GET['action'] === 'downloadSheet') {
             $controllerBase->requireAuth();
-            $controllerDashboard->downloadSheet();
+            $controllerDashboard->downloadSheet($_SESSION['user']['id']);
         }
         if($_GET['action'] === 'downloadPDF') {
             $controllerBase->requireAuth();

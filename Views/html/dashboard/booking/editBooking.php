@@ -15,11 +15,11 @@
     <div class="logo">Four Seasons</div>
 
     <div class="nav-links">
-        <a href="dashboard.php">Dashboard</a>
-        <a href="#">Cerrar sesión</a>
+        <a href="<?= SITE_URL ?>index.php?action=getDashboard">Dashboard</a>
+        <a href="<?= SITE_URL ?>index.php?action=logoutUser">Cerrar sesión</a>
     </div>
 </nav>
-<pre> <?php print_r($_SESSION)?></pre>
+
 <section class="form-reserva">
 
     <h2 class="title-main">Editar Reserva</h2>

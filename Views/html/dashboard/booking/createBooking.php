@@ -17,9 +17,6 @@
         <a href="<?= SITE_URL ?>index.php?action=logoutUser">Cerrar sesión</a>
     </div>
 </nav>
-<pre>
-    <?php print_r($_SESSION) ?>
-</pre>
 
 <section class="form-reserva">
 
@@ -29,7 +26,7 @@
 
         <!-- HABITACIÓN -->
         <div class="form-group">
-            <label>Seleccione el tipo de habitacion</label>
+            <label class="black-form-field">Seleccione el tipo de habitacion</label>
             <select name="category_id" id="category_id" required>
                 <option value="">Seleccionar</option>
                 <?php foreach ($categories as $category){ ?>
@@ -46,7 +43,7 @@
         </div>
 
         <div class="form-group">
-            <label>habitaciones disponibles</label>
+            <label class="black-form-field">habitaciones disponibles</label>
             <select name="room_id" id="room_id" disabled required>
                 <option value="">Selecciona una tipo de habitacion</option>
             </select>
@@ -62,7 +59,7 @@
 
         <!-- FECHA INICIO -->
         <div class="form-group">
-            <label>Fecha de inicio</label>
+            <label class="black-form-field">Fecha de inicio</label>
             <input type="date" name="start_date" id="start_date" required>
             <?php
                 if (!empty($_SESSION['errors']['start_date'] ?? [])){
@@ -75,7 +72,7 @@
 
         <!-- FECHA FIN -->
         <div class="form-group">
-            <label>Fecha de fin</label>
+            <label class="black-form-field">Fecha de fin</label>
             <input type="date" name="end_date" id="end_date" required>
             <?php
                 if (!empty($_SESSION['errors']['end_date'] ?? [])){
@@ -99,7 +96,7 @@
 
         <!-- PERSONAS -->
         <div class="form-group">
-            <label>Cantidad de personas</label>
+            <label class="black-form-field">Cantidad de personas</label>
             <input type="number" name="guest_count" id="guest_count" min="1" required disabled>
             <small id="guest_limit"> Seleccione una habitacion antes </small>
             <?php
@@ -113,7 +110,7 @@
 
         <!-- MÉTODO DE PAGO -->
         <div class="form-group">
-            <label>Método de pago</label>
+            <label class="black-form-field">Método de pago</label>
             <select name="payment_method_id" id="payment_method_id" placeholder="Seleccione una habitacion primero" required>
                 <option value="">Seleccionar</option>
                 <?php foreach ($paymentMethods as $method){ ?>
